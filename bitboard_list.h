@@ -4,6 +4,8 @@
 typedef struct {
   bitboard * bitboards;
   int length;
+  /* length allocated */
+  int l_alloc;
 } bitboard_list;
 
 #define BBL_LENGTH(bb) bb->length

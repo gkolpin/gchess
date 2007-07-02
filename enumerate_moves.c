@@ -190,6 +190,8 @@ void enumeratePawnPromotions(game_state_list *gsl, game_state *gs, color c,
     curBoardstate = getBoardstate(gsTemp2);
     bs_placePiece(curBoardstate, c, curPiece, row, col);
     insert_gs(gsl, gsTemp2);
+    gsShallowFree(gsTemp2);
+    free(gsTemp2);
   }
 
   gsShallowFree(gsTemp);

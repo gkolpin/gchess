@@ -213,7 +213,7 @@ void makeComputerMove(game_state **gs, move *m){
   game_state *gsFrom = *gs;
   game_state *gsTo;
 
-  gsTo = search(gsFrom, getPlayerToMove(gsFrom), 3);
+  gsTo = search(gsFrom, getPlayerToMove(gsFrom), 2);
 
   findMoveFromTo(getBoardstate(gsFrom), getBoardstate(gsTo), m, getPlayerToMove(gsFrom));
 

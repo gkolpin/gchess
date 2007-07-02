@@ -1,4 +1,4 @@
-DEBUG = -g -DMOVES_ROOK_DEBUG_disabled
+DEBUG = -g -DMOVES_ROOK_DEBUG_disabled -pg -static
 
 bitboard.o: 
 	gcc $(DEBUG) -c bitboard.c

@@ -2,8 +2,7 @@
 #define BITBOARD_H
 
 #include "position.h"
-
-typedef unsigned long long int bitboard;
+#include "types.h"
 
 void bb_init();
 
@@ -22,12 +21,12 @@ void setEmpty(bitboard*, int row, int col);
 void setEmptyFast(bitboard*, int row, int col);
 
 void fillRow(bitboard *bb, int row);
-void fillRowWith(bitboard*, int, char);
-void fillAllRowsWith(bitboard*, char);
+void fillRowWith(bitboard*, int, r_data);
+void fillAllRowsWith(bitboard*, r_data);
 
-unsigned char getRow(bitboard*, int);
-void setRow(bitboard*, int, char);
-char getCol(bitboard*, int);
+r_data getRow(bitboard*, int);
+void setRow(bitboard*, int, r_data);
+r_data getCol(bitboard*, int);
 
 void union_bb(bitboard *bb1, bitboard *bb2, bitboard *result);
 void union_bbSet(bitboard *bb, int numBB, bitboard *result);

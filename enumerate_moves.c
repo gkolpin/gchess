@@ -2,7 +2,6 @@
 
 #include "boardstate.h"
 #include "game_state.h"
-#include "util.h"
 #include "enumerate_moves.h"
 #include "moves.h"
 #include "bitboards.h"

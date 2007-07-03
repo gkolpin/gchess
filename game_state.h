@@ -2,7 +2,6 @@
 #define GAME_STATE_H
 
 #include "boardstate.h"
-#include "util.h"
 #include "game_state_list.h"
 #include "move.h"
 

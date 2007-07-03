@@ -2,7 +2,7 @@
 #define BOARD_STATE_H
 
 #include "bitboard.h"
-#include "util.h"
+#include "types.h"
 #include "move.h"
 #include "bitboard_list.h"
 #include "piece.h"

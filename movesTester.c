@@ -1,5 +1,4 @@
 #include "moves.h"
-#include "util.h"
 #include "move.h"
 #include <stdio.h>
 

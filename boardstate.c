@@ -1,6 +1,6 @@
 #include "boardstate.h"
 #include "move.h"
-#include "util.h"
+#include "types.h"
 #include "bitboards.h"
 #include "bitboard.h"
 #include "position.h"

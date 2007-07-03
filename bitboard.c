@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 void initPositions();
-int getPositionOfFilledInRow(unsigned char);
+int getPositionOfFilledInRow(r_data);
 
 void bb_init(){
   bitboards_init();
@@ -17,7 +17,7 @@ position positions[8][256];
    are filled */
 void initPositions(){
   int row, i_row_descr;
-  unsigned char row_descr;
+  r_data row_descr;
   
   for (row = 0; row < 8; row++){
     for (i_row_descr = 0, row_descr = 0; i_row_descr < 256; row_descr++, 
@@ -28,7 +28,7 @@ void initPositions(){
   }
 }
 
-int getPositionOfFilledInRow(unsigned char row_descr){
+int getPositionOfFilledInRow(r_data row_descr){
   int pos = 0;
   while (row_descr >>= 1) pos++;
   return pos;
@@ -69,35 +69,35 @@ void setEmptyFast(bitboard* bb, int row, int col){
 }
 
 void fillRow(bitboard *bb, int row){
-  ((char*)(bb))[row] = (char)255;
+  ((r_data*)(bb))[row] = (r_data)255;
 }
 
-void fillRowWith(bitboard *bb, int row, char c){
-  ((char*)(bb))[row] = c;
+void fillRowWith(bitboard *bb, int row, r_data c){
+  ((r_data*)(bb))[row] = c;
 }
 
-void fillAllRowsWith(bitboard *bb, char c){
+void fillAllRowsWith(bitboard *bb, r_data c){
   int row;
   for (row = 0; row < 8; row++){
-    ((char*)(bb))[row] = c;
+    ((r_data*)(bb))[row] = c;
   }
 }
 
-unsigned char getRow(bitboard *bb, int row){
-  return ((unsigned char*)(bb))[row];
+r_data getRow(bitboard *bb, int row){
+  return ((r_data*)(bb))[row];
 }
 
-void setRow(bitboard *bb, int row, char rowData){
+void setRow(bitboard *bb, int row, r_data rowData){
   fillRowWith(bb, row, rowData);
 }
 
-char getCol(bitboard *bb, int col){
+r_data getCol(bitboard *bb, int col){
   int row;
-  char returnval = 0;
+  r_data returnval = 0;
   
   for (row = 0; row < 8; row++){
     if (isFilledFast(bb, row, col))
-      returnval |= (char)((char)1 << (7 - row));
+      returnval |= (r_data)((r_data)1 << (7 - row));
   }
 
   return returnval;
@@ -125,10 +125,10 @@ void xor_bb(bitboard *bb1, bitboard *bb2, bitboard *result){
 }
 
 void flipboard(bitboard *bb){
-  char *c_array = (char*)bb;
+  r_data *c_array = (r_data*)bb;
   int i;
   int j;
-  char t;
+  r_data t;
   for (i = 0, j = 7; i < 4; i++, j--){
     t = c_array[i];
     c_array[i] = c_array[j];
@@ -179,9 +179,9 @@ void rotateBoardNeg45(bitboard *bb){
      counting from the left) */
 
   int i;
-  unsigned char row;
+  r_data row;
   int shift_amount;
-  unsigned char temp_row;
+  r_data temp_row;
 
   /* We will be shifting columns, so first rotate by 90 so 
      that the columns become rows and we can use bitwise operators */

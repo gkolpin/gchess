@@ -11,4 +11,6 @@ typedef struct{
 #define P_SET_ROW(pos, i_row) (pos)->row = i_row
 #define P_SET_COL(pos, i_col) (pos)->col = i_col
 
+void pos_print(position*);
+
 #endif

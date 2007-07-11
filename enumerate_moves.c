@@ -189,8 +189,6 @@ void enumeratePawnPromotions(game_state_list *gsl, game_state *gs, color c,
     curBoardstate = getBoardstate(gsTemp2);
     bs_placePiece(curBoardstate, c, curPiece, row, col);
     insert_gs(gsl, gsTemp2);
-    gsShallowFree(gsTemp2);
-    free(gsTemp2);
   }
 
   gsShallowFree(gsTemp);
@@ -238,7 +236,6 @@ void enumerate_pawn_moves(game_state *gs, game_state_list *gslReturn){
 	makeMove(gsTemp, &m);
 	insert_gs(gslReturn, gsTemp);
 	isBlocked = 0;
-	free(gsTemp);
       }
       if (!(*full_board & pos[P_ROW(posTemp) - 2][P_COL(posTemp)]) && 
 	  !isBlocked){
@@ -247,7 +244,6 @@ void enumerate_pawn_moves(game_state *gs, game_state_list *gslReturn){
 	gsTemp = gs_deepCopy(gs);
 	makeMove(gsTemp, &m);
 	insert_gs(gslReturn, gsTemp);
-	free(gsTemp);
       }
     } else if (P_ROW(posTemp) != 6 && getPlayerToMove(gs) == WHITE){
       if (!(*full_board & pos[P_ROW(posTemp) - 1][P_COL(posTemp)])){
@@ -262,7 +258,6 @@ void enumerate_pawn_moves(game_state *gs, game_state_list *gslReturn){
 	  free(gsTemp);
 	} else {
 	  insert_gs(gslReturn, gsTemp);
-	  free(gsTemp);
 	}
       }      
     } else if (P_ROW(posTemp) == 1 && getPlayerToMove(gs) == BLACK){
@@ -273,7 +268,6 @@ void enumerate_pawn_moves(game_state *gs, game_state_list *gslReturn){
 	gsTemp = gs_deepCopy(gs);
 	makeMove(gsTemp, &m);
 	insert_gs(gslReturn, gsTemp);
-	free(gsTemp);
       }
       if (!(*full_board & pos[P_ROW(posTemp) + 2][P_COL(posTemp)]) &&
 	  !isBlocked){
@@ -282,7 +276,6 @@ void enumerate_pawn_moves(game_state *gs, game_state_list *gslReturn){
 	gsTemp = gs_deepCopy(gs);
 	makeMove(gsTemp, &m);
 	insert_gs(gslReturn, gsTemp);
-	free(gsTemp);
       }
     } else if (P_ROW(posTemp) != 1 && getPlayerToMove(gs) == BLACK){
       if (!(*full_board & pos[P_ROW(posTemp) + 1][P_COL(posTemp)])){
@@ -297,7 +290,6 @@ void enumerate_pawn_moves(game_state *gs, game_state_list *gslReturn){
 	  free(gsTemp);
 	} else {
 	  insert_gs(gslReturn, gsTemp);
-	  free(gsTemp);
 	}
       }
     }
@@ -319,7 +311,6 @@ void enumerate_pawn_moves(game_state *gs, game_state_list *gslReturn){
 	  free(gsTemp);
 	} else {
 	  insert_gs(gslReturn, gsTemp);
-	  free(gsTemp);
 	}
       }
     }
@@ -359,7 +350,6 @@ void enumerate_knight_moves(game_state *gs, game_state_list *gslReturn){
 		P_ROW(posTemp2), P_COL(posTemp2));
 	makeMove(gsTemp, &m);
 	insert_gs(gslReturn, gsTemp);
-	free(gsTemp);
       }
     }
   }
@@ -395,7 +385,6 @@ void enumerate_single_rook_moves(bitboard *curPos, game_state_list *toFill,
 	      P_ROW(posTemp2), P_COL(posTemp2));
       makeMove(gsTemp, &m);
       insert_gs(toFill, gsTemp);
-      free(gsTemp);
     }
   }
   
@@ -408,7 +397,6 @@ void enumerate_single_rook_moves(bitboard *curPos, game_state_list *toFill,
 	      P_ROW(posTemp2), P_COL(posTemp2));
       makeMove(gsTemp, &m);
       insert_gs(toFill, gsTemp);
-      free(gsTemp);
     }
   }  
 }
@@ -474,7 +462,6 @@ void enumerate_single_bishop_moves(bitboard *curPos, game_state_list *toFill,
 	      P_ROW(posTemp2), P_COL(posTemp2));
       makeMove(gsTemp, &m);
       insert_gs(toFill, gsTemp);
-      free(gsTemp);
     }
   }
   
@@ -487,7 +474,6 @@ void enumerate_single_bishop_moves(bitboard *curPos, game_state_list *toFill,
 	      P_ROW(posTemp2), P_COL(posTemp2));
       makeMove(gsTemp, &m);
       insert_gs(toFill, gsTemp);
-      free(gsTemp);
     }
   }  
 }
@@ -592,7 +578,6 @@ void enumerate_king_moves(game_state *gs, game_state_list *gslReturn){
 	      P_ROW(posTemp2), P_COL(posTemp2));
       makeMove(gsTemp, &m);
       insert_gs(gslReturn, gsTemp);
-      free(gsTemp);
     }
   }
 }
@@ -614,7 +599,7 @@ game_state_list * enumerate_moves(game_state *gs, int removeChecks){
   if (removeChecks){
     
     for (i = 0; i < gslReturn->length; i++){
-      if (isKingInCheck(&gslReturn->game_states[i], 
+      if (isKingInCheck(gslReturn->game_states[i], 
 			getPlayerToMove(gs))){
 	delete_gs(gslReturn, i);
 	i--;

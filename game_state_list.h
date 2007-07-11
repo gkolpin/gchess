@@ -4,8 +4,9 @@
 #include "game_state.h"
 
 typedef struct game_state_list {
-  struct game_state *game_states;
+  struct game_state **game_states;
   int length;
+  int l_alloc;
 } game_state_list;
 
 game_state_list * create_gsl();

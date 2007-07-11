@@ -23,6 +23,7 @@ boardstate * getBoardstate(game_state*);
 int gs_isSpaceFilled(game_state*, int row, int col);
 int en_passante(game_state*);
 void makeMove(game_state*, move*);
+void gs_undoMove(game_state*, move*);
 /* the second argument is a 2-d array of bitboards. The first
  slot is the old piece location, the second is the new. */
 void makeMoveUsingBB(game_state*, bitboard**);

@@ -17,12 +17,7 @@ game_state * createGamestate(boardstate *b_state, color player_to_move){
 }
 
 game_state * createDefaultGamestate(){
-  game_state *gsReturn = (game_state*)malloc(sizeof(game_state));
-
-  gsReturn->b_state = createDefaultBoardstate();
-  gsReturn->player_to_move = WHITE;
-  gsReturn->en_passante = 0;
-
+  game_state *gsReturn = createGamestate(createDefaultBoardstate(), WHITE);
   return gsReturn;
 }
 
@@ -54,7 +49,11 @@ void makeMove(game_state *gs, move *m){
 
   else
     gs->player_to_move = WHITE;
+}
 
+void gs_undoMove(game_state *gs, move *m){
+  gs->player_to_move = gs->player_to_move == WHITE ? BLACK : WHITE;
+  bs_undoMove(gs->b_state, m, gs->player_to_move);
 }
 
 /* void makeMoveUsingBB(game_state *gs, bitboard *move){ */
@@ -91,7 +90,7 @@ game_state_list * copyGameStates(game_state *gs, int n){
   game_state_list *gslReturn = create_gsl_ofSize(n);
   int i;
   for (i = 0; i < n; i++){
-    gs_deepCopyTo(gs, &gslReturn->game_states[i]);
+    gs_deepCopyTo(gs, gslReturn->game_states[i]);
   }
   gslReturn->length = n;
   return gslReturn;
@@ -122,7 +121,7 @@ int isValidMove(game_state *g_state, move *m){
 
   int i;
   for (i = 0; i < gsl->length; i++){
-    if (gsEquals(gsTemp, &gsl->game_states[i])){
+    if (gsEquals(gsTemp, gsl->game_states[i])){
       iReturn = 1;
       break;
     }
@@ -174,8 +173,8 @@ int isKingInCheck(game_state *gs, color c){
 
   int i;
   for (i = 0; i < gsl->length; i++){
-    if ((otherColor == WHITE ? getAllWhite(getBoardstate(&gsl->game_states[i]))[0] :
-	 getAllBlack(getBoardstate(&gsl->game_states[i]))[0])
+    if ((otherColor == WHITE ? getAllWhite(getBoardstate(gsl->game_states[i]))[0] :
+	 getAllBlack(getBoardstate(gsl->game_states[i]))[0])
 	& king_pos){
 
       iReturn = 1;

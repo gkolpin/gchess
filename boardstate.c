@@ -411,6 +411,8 @@ void makeBoardMoveCapture(boardstate *bs, move *m, color side_to_move){
   int idx;
   bitboard inverted_old_pos = inverse[m->oldRow][m->oldCol];
   bitboard new_pos = pos[m->newRow][m->newCol];
+  m->capturedPiece = getPieceType(bs, side_to_move == WHITE ? BLACK : WHITE, 
+				  m->newRow, m->newCol);
 
   piece piece_to_move = getPieceType(bs, side_to_move, m->oldRow, m->oldCol);
   if (piece_to_move == NULL_PIECE){
@@ -602,6 +604,28 @@ void makeBoardMove(boardstate *bs, move *m, color side_to_move){
     }
   }
 }
+
+void bs_undoMove(boardstate *bs, move *m, color c){
+  color c_other = c == WHITE ? BLACK : WHITE;
+  piece p_captured = m->capturedPiece;
+  piece p_moved = getPieceType(bs, c, m->newRow, m->newCol);
+  
+  
+  /* determine if pawn promotion */
+  if (m->pawnPromotion != NULL_PIECE){
+    bs_removePiece(bs, m->newRow, m->newCol);
+    bs_placePiece(bs, c, PAWN, m->oldRow, m->oldCol);
+  } else {
+    bs_removePiece(bs, m->newRow, m->newCol);
+    bs_placePiece(bs, c, p_moved, m->oldRow, m->oldCol);
+  }
+
+  if (m->capturedPiece != NULL_PIECE){
+    bs_placePiece(bs, c, p_captured, m->newRow, m->newCol);
+  }
+
+}
+
 
 /* void makeBoardMoveUsingBB(boardstate *bs, bitboard *move, color side_to_move){ */
 /*   if (isCaptureUsingBB(bs, move, side_to_move)){ */

@@ -57,6 +57,7 @@ void printBoardstate(boardstate*);
 
 // Assumes move is correct move
 void makeBoardMove(boardstate*, move*, color);
+void bs_undoMove(boardstate*, move*, color);
 
 void findMoveFromTo(boardstate *from, boardstate *to, move*, color);
 

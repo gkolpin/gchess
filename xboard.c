@@ -17,9 +17,9 @@
 #define STREQ(buf, str) !strncmp(buf, str, XBOARD_INPUT_BUF_SIZE)
 
 void xboard_start_io();
-void getMove(unsigned char*, move*);
-void makeComputerMove(game_state**, move*);
-void getMoveText(move*, unsigned char*);
+move getMove(unsigned char*);
+move makeComputerMove(game_state**, move);
+void getMoveText(move, unsigned char*);
 
 void xboard_start(){
   
@@ -150,20 +150,20 @@ void xboard_start_io(){
     } else {
       //printf("move e7e5");
       //fprintf(stderr, "%s\n", buf);
-      getMove(argv[0], &m);
-      if (!isValidMove(gs, &m)){
+      m = getMove(argv[0]);
+      if (!isValidMove(gs, m)){
 	printf("Illegal move: %s\n", argv[0]);
 	continue;
       } else {
-	makeMove(gs, &m);
+	makeMove(gs, m);
       }
 
       if (isCheckMate(gs, cPlayer)){
 	printf("1-0 {White mates}\n");
       }
       else {
-	makeComputerMove(&gs, &m);
-	getMoveText(&m, moveText);
+	m = makeComputerMove(&gs, m);
+	getMoveText(m, moveText);
 	printf("move %s\n", moveText);
 	if (isCheckMate(gs, cComputer)){
 	  printf("0-1 {Black mates}\n");
@@ -173,7 +173,8 @@ void xboard_start_io(){
   }
 }
 
-void getMove(unsigned char *ntMove, move *m){
+move getMove(unsigned char *ntMove){
+  move m;
   unsigned int oldRow, oldCol, newRow, newCol;
   piece p;
   oldRow = ('9' - ntMove[1] - 1);
@@ -196,13 +197,15 @@ void getMove(unsigned char *ntMove, move *m){
       p = QUEEN;
       break;
     }
-    setMoveWithPromotion(m, oldRow, oldCol, newRow, newCol, p);
+    m = m_set_all(m, oldRow, oldCol, newRow, newCol, p, NULL_PIECE);
   } else {
-    setMove(m, oldRow, oldCol, newRow, newCol);
+    m = m_set_all(m, oldRow, oldCol, newRow, newCol, NULL_PIECE, NULL_PIECE);
   }
+
+  return m;
 }
 
-void makeComputerMove(game_state **gs, move *m){
+move makeComputerMove(game_state **gs, move m){
   /*game_state_list *gslPotentialMoves = enumerate_moves(*gs, 1);
   int r;
   
@@ -215,7 +218,7 @@ void makeComputerMove(game_state **gs, move *m){
 
   gsTo = search(gsFrom, getPlayerToMove(gsFrom), 2);
 
-  findMoveFromTo(getBoardstate(gsFrom), getBoardstate(gsTo), m, getPlayerToMove(gsFrom));
+  m = findMoveFromTo(getBoardstate(gsFrom), getBoardstate(gsTo), getPlayerToMove(gsFrom));
 
   *gs = gsTo;
 
@@ -226,11 +229,12 @@ void makeComputerMove(game_state **gs, move *m){
   
   //gslDeepFree(gslPotentialMoves);
 
+  return m;
 }
 
-void getMoveText(move *m, unsigned char *text){
-  text[0] = m->oldCol + 'a';
-  text[1] = 7 - m->oldRow + 1 + '0';
-  text[2] = m->newCol + 'a';
-  text[3] = 7 - m->newRow + 1 + '0';
+void getMoveText(move m, unsigned char *text){
+  text[0] = m_get_ocol(m) + 'a';
+  text[1] = 7 - m_get_orow(m) + 1 + '0';
+  text[2] = m_get_ncol(m) + 'a';
+  text[3] = 7 - m_get_nrow(m) + 1 + '0';
 }

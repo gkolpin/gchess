@@ -121,7 +121,7 @@ void testEnumeratePawnMoves(){
 
   for (i = 0; i < gsl->length; i++){
     printf("\n\n");
-    printBoardstate(getBoardstate(&gsl->game_states[i]));
+    printBoardstate(getBoardstate(gsl->game_states[i]));
   }
 }
 
@@ -136,7 +136,7 @@ void testEnumerateKnightMoves(){
 
   for (i = 0; i < gsl->length; i++){
     printf("\n\n");
-    printBoardstate(getBoardstate(&gsl->game_states[i]));
+    printBoardstate(getBoardstate(gsl->game_states[i]));
   }
 }
 
@@ -146,8 +146,8 @@ void testEnumerateRookMoves(){
   game_state *gs = createGamestate(createDefaultBoardstate(), WHITE);
   
   move m1, m2;
-  setMove(&m1, 6, 0, 4, 0);
-  setMove(&m2, 1, 0, 2, 0);
+  m1 = m_set_all(m1, 6, 0, 4, 0, NULL_PIECE, NULL_PIECE);
+  m2 = m_set_all(m2, 1, 0, 2, 0, NULL_PIECE, NULL_PIECE);
 
   //makeMove(gs, &m2);
   //makeMove(gs, &m1);
@@ -158,7 +158,7 @@ void testEnumerateRookMoves(){
 
   for (i = 0; i < gsl->length; i++){
     printf("\n\n");
-    printBoardstate(getBoardstate(&gsl->game_states[i]));
+    printBoardstate(getBoardstate(gsl->game_states[i]));
   }
 }
 
@@ -168,15 +168,15 @@ void testEnumerateBishopMoves(){
   game_state *gs = createGamestate(createDefaultBoardstate(), WHITE);
   
   move m1, m2, m3, m4;
-  setMove(&m1, 6, 1, 4, 1);
-  setMove(&m2, 1, 0, 2, 0);
-  setMove(&m3, 6, 3, 4, 3);
-  setMove(&m4, 1, 1, 2, 1);
+  m1 = m_set_all(m1, 6, 1, 4, 1, NULL_PIECE, NULL_PIECE);
+  m2 = m_set_all(m2, 1, 0, 2, 0, NULL_PIECE, NULL_PIECE);
+  m3 = m_set_all(m3, 6, 3, 4, 3, NULL_PIECE, NULL_PIECE);
+  m4 = m_set_all(m4, 1, 1, 2, 1, NULL_PIECE, NULL_PIECE);
 
-  makeMove(gs, &m1);
-  makeMove(gs, &m2);
-  makeMove(gs, &m3);
-  makeMove(gs, &m4);
+  makeMove(gs, m1);
+  makeMove(gs, m2);
+  makeMove(gs, m3);
+  makeMove(gs, m4);
 
   enumerate_bishop_moves(gs, gsl);
   
@@ -184,7 +184,7 @@ void testEnumerateBishopMoves(){
 
   for (i = 0; i < gsl->length; i++){
     printf("\n\n");
-    printBoardstate(getBoardstate(&gsl->game_states[i]));
+    printBoardstate(getBoardstate(gsl->game_states[i]));
   }
 }
 
@@ -194,15 +194,15 @@ void testEnumerateQueenMoves(){
   game_state *gs = createGamestate(createDefaultBoardstate(), WHITE);
   
   move m1, m2, m3, m4;
-  setMove(&m1, 6, 1, 4, 1);
-  setMove(&m2, 1, 0, 2, 0);
-  setMove(&m3, 6, 3, 4, 3);
-  setMove(&m4, 1, 1, 2, 1);
+  m1 = m_set_all(m1, 6, 1, 4, 1, NULL_PIECE, NULL_PIECE);
+  m2 = m_set_all(m2, 1, 0, 2, 0, NULL_PIECE, NULL_PIECE);
+  m3 = m_set_all(m3, 6, 3, 4, 3, NULL_PIECE, NULL_PIECE);
+  m4 = m_set_all(m4, 1, 1, 2, 1, NULL_PIECE, NULL_PIECE);
 
-  makeMove(gs, &m1);
-  makeMove(gs, &m2);
-  makeMove(gs, &m3);
-  makeMove(gs, &m4);
+  makeMove(gs, m1);
+  makeMove(gs, m2);
+  makeMove(gs, m3);
+  makeMove(gs, m4);
   
   enumerate_queen_moves(gs, gsl);
   
@@ -210,8 +210,8 @@ void testEnumerateQueenMoves(){
 
   for (i = 0; i < gsl->length; i++){
     printf("\n\n");
-    printBoardstate(getBoardstate(&gsl->game_states[i]));
-    printBitboard(&(getBoardstate(&gsl->game_states[i]))->whiteLists[QUEEN].bitboards[0]);
+    printBoardstate(getBoardstate(gsl->game_states[i]));
+    printBitboard(&(getBoardstate(gsl->game_states[i]))->whiteLists[QUEEN].bitboards[0]);
   }
 }
 
@@ -220,15 +220,15 @@ void testEnumerateKingMoves(){
   game_state *gs = createGamestate(createDefaultBoardstate(), WHITE);
   
   move m1, m2, m3, m4;
-  setMove(&m1, 6, 1, 4, 1);
-  setMove(&m2, 1, 0, 2, 0);
-  setMove(&m3, 6, 3, 4, 3);
-  setMove(&m4, 1, 1, 2, 1);
+  m1 = m_set_all(m1, 6, 1, 4, 1, NULL_PIECE, NULL_PIECE);
+  m2 = m_set_all(m2, 1, 0, 2, 0, NULL_PIECE, NULL_PIECE);
+  m3 = m_set_all(m3, 6, 3, 4, 3, NULL_PIECE, NULL_PIECE);
+  m4 = m_set_all(m4, 1, 1, 2, 1, NULL_PIECE, NULL_PIECE);
 
-  makeMove(gs, &m1);
-  makeMove(gs, &m2);
-  makeMove(gs, &m3);
-  makeMove(gs, &m4);
+  makeMove(gs, m1);
+  makeMove(gs, m2);
+  makeMove(gs, m3);
+  makeMove(gs, m4);
 
   enumerate_king_moves(gs, gsl);
   
@@ -236,7 +236,7 @@ void testEnumerateKingMoves(){
 
   for (i = 0; i < gsl->length; i++){
     printf("\n\n");
-    printBoardstate(getBoardstate(&gsl->game_states[i]));
+    printBoardstate(getBoardstate(gsl->game_states[i]));
   }
 }
 
@@ -257,7 +257,7 @@ void testEnumeratePawnPromotions(){
   int i;
   for (i = 0; i < gsl->length; i++){
     printf("\n\n");
-    printBoardstate(getBoardstate(&gsl->game_states[i]));
+    printBoardstate(getBoardstate(gsl->game_states[i]));
   }
 }
 
@@ -267,11 +267,11 @@ int main(){
   //testBishop();
   //testRook();
   //testKing();
-  //testEnumeratePawnMoves();
+  testEnumeratePawnMoves();
   //testEnumerateKnightMoves();
   //testEnumerateRookMoves();
   //testEnumerateBishopMoves();
   //testEnumerateQueenMoves();
   //testEnumerateKingMoves();
-  testEnumeratePawnPromotions();
+  //testEnumeratePawnPromotions();
 }

@@ -380,11 +380,11 @@ void bs_fillRowWithPiece(boardstate *bs, color c, piece p, int row){
   free_bbl(bblTemp);
 }
 
-int isCapture(boardstate *bs, move *m, color side_to_move){
+int isCapture(boardstate *bs, move m, color side_to_move){
   if (side_to_move == WHITE){
-    return (bs->allBlack & pos[m->newRow][m->newCol]) != 0 ? 1 : 0;
+    return (bs->allBlack & pos[m_get_nrow(m)][m_get_ncol(m)]) != 0 ? 1 : 0;
   } else {
-    return (bs->allWhite & pos[m->newRow][m->newCol]) != 0 ? 1 : 0;
+    return (bs->allWhite & pos[m_get_nrow(m)][m_get_ncol(m)]) != 0 ? 1 : 0;
   }
 }
 
@@ -407,14 +407,15 @@ int findBBLIndexOfPosition(bitboard_list *bbl, bitboard *bb){
   return -1;
 }
 
-void makeBoardMoveCapture(boardstate *bs, move *m, color side_to_move){
+void makeBoardMoveCapture(boardstate *bs, move m, color side_to_move){
   int idx;
-  bitboard inverted_old_pos = inverse[m->oldRow][m->oldCol];
-  bitboard new_pos = pos[m->newRow][m->newCol];
-  m->capturedPiece = getPieceType(bs, side_to_move == WHITE ? BLACK : WHITE, 
-				  m->newRow, m->newCol);
+  bitboard inverted_old_pos = inverse[m_get_orow(m)][m_get_ocol(m)];
+  bitboard new_pos = pos[m_get_nrow(m)][m_get_ncol(m)];
+  m = m_set_cp(m, getPieceType(bs, side_to_move == WHITE ? BLACK : WHITE, 
+			       m_get_nrow(m), m_get_ncol(m)));
 
-  piece piece_to_move = getPieceType(bs, side_to_move, m->oldRow, m->oldCol);
+  piece piece_to_move = getPieceType(bs, side_to_move, 
+				     m_get_orow(m), m_get_ocol(m));
   if (piece_to_move == NULL_PIECE){
     return;
   }
@@ -428,8 +429,8 @@ void makeBoardMoveCapture(boardstate *bs, move *m, color side_to_move){
     bbl_colorToMove = &bs->whiteLists[piece_to_move];
     bbl_colorToCapture = &bs->blackLists[idx = getIndexOfFilled(bs->blackPieces, 
 								PIECE_TYPES, 
-								m->newRow,
-								m->newCol)];
+								m_get_nrow(m),
+								m_get_ncol(m))];
     bb_colorToMove = &bs->whitePieces[piece_to_move];
     bb_colorToCapture = &bs->blackPieces[idx];
 
@@ -442,8 +443,8 @@ void makeBoardMoveCapture(boardstate *bs, move *m, color side_to_move){
     bbl_colorToMove = &bs->blackLists[piece_to_move];
     bbl_colorToCapture = &bs->whiteLists[idx = getIndexOfFilled(bs->whitePieces, 
 								PIECE_TYPES,
-								m->newRow,
-								m->newCol)];
+								m_get_nrow(m),
+								m_get_ncol(m))];
     bb_colorToMove = &bs->blackPieces[piece_to_move];
     bb_colorToCapture = &bs->whitePieces[idx];
 
@@ -459,12 +460,13 @@ void makeBoardMoveCapture(boardstate *bs, move *m, color side_to_move){
   bs->fullBoard |= new_pos;
 
   /* bbl colorToMove */
-  idx = findBBLIndexOfPosition(bbl_colorToMove, &pos[m->oldRow][m->oldCol]);
+  idx = findBBLIndexOfPosition(bbl_colorToMove, &pos[m_get_orow(m)][m_get_ocol(m)]);
   bbl_colorToMove->bitboards[idx] &= inverted_old_pos;
   bbl_colorToMove->bitboards[idx] |= new_pos;
 
   /* bbl to capture */
-  idx = findBBLIndexOfPosition(bbl_colorToCapture, &pos[m->newRow][m->newCol]);
+  idx = findBBLIndexOfPosition(bbl_colorToCapture, 
+			       &pos[m_get_nrow(m)][m_get_ncol(m)]);
   delete_bb_at(bbl_colorToCapture, idx);
 
   /* bb color to move */
@@ -526,12 +528,12 @@ void makeBoardMoveCapture(boardstate *bs, move *m, color side_to_move){
 /*   *bb_colorToCapture &= inverted_old_pos; */
 /* } */
 
-void makeBoardMoveNonCapture(boardstate *bs, move *m, color side_to_move){
+void makeBoardMoveNonCapture(boardstate *bs, move m, color side_to_move){
   int idx;
-  bitboard inverted_old_pos = inverse[m->oldRow][m->oldCol];
-  bitboard new_pos = pos[m->newRow][m->newCol];
+  bitboard inverted_old_pos = inverse[m_get_orow(m)][m_get_ocol(m)];
+  bitboard new_pos = pos[m_get_nrow(m)][m_get_ncol(m)];
 
-  piece piece_to_move = getPieceType(bs, side_to_move, m->oldRow, m->oldCol);
+  piece piece_to_move = getPieceType(bs, side_to_move, m_get_orow(m), m_get_ocol(m));
   if (piece_to_move == NULL_PIECE){
     return;
   }
@@ -540,7 +542,7 @@ void makeBoardMoveNonCapture(boardstate *bs, move *m, color side_to_move){
     /* first do whiteLists */
     idx = 
       findBBLIndexOfPosition(&bs->whiteLists[piece_to_move], 
-			     &pos[m->oldRow][m->oldCol]);
+			     &pos[m_get_orow(m)][m_get_ocol(m)]);
     bs->whiteLists[piece_to_move].bitboards[idx] = 0;
     bs->whiteLists[piece_to_move].bitboards[idx] |= new_pos;
 
@@ -556,7 +558,7 @@ void makeBoardMoveNonCapture(boardstate *bs, move *m, color side_to_move){
     /* first do blackLists */
     idx = 
       findBBLIndexOfPosition(&bs->blackLists[piece_to_move], 
-			     &pos[m->oldRow][m->oldCol]);
+			     &pos[m_get_orow(m)][m_get_ocol(m)]);
     bs->blackLists[piece_to_move].bitboards[idx] = 0;
     bs->blackLists[piece_to_move].bitboards[idx] |= new_pos;
 
@@ -575,7 +577,7 @@ void makeBoardMoveNonCapture(boardstate *bs, move *m, color side_to_move){
   bs->fullBoard |= new_pos;
 }
 
-void makeBoardMove(boardstate *bs, move *m, color side_to_move){
+void makeBoardMove(boardstate *bs, move m, color side_to_move){
   /* @TODO - Ensure this function handles captures - done */
 
   if (isCapture(bs, m, side_to_move)){
@@ -587,41 +589,41 @@ void makeBoardMove(boardstate *bs, move *m, color side_to_move){
   /* check to see if a pawn has made it to the opposite end, 
      and if it has, promote it */
 
-  piece p = getPieceType(bs, side_to_move, m->newRow, m->newCol);
+  piece p = getPieceType(bs, side_to_move, m_get_nrow(m), m_get_ncol(m));
   if (p == PAWN){
-    if (GET_PAWN_PROMOTION(m) == NULL_PIECE){
+    if (m_get_pp(m) == NULL_PIECE){
       return;
     }
 
-    if (side_to_move == WHITE && m->newRow == 0){
+    if (side_to_move == WHITE && m_get_nrow(m) == 0){
       /* promote white pawn */
-      bs_removePiece(bs, m->newRow, m->newCol);
-      bs_placePiece(bs, WHITE, GET_PAWN_PROMOTION(m), m->newRow, m->newCol);
-    } else if (side_to_move == BLACK && m->newRow == 7){
+      bs_removePiece(bs, m_get_nrow(m), m_get_ncol(m));
+      bs_placePiece(bs, WHITE, m_get_pp(m), m_get_nrow(m), m_get_ncol(m));
+    } else if (side_to_move == BLACK && m_get_nrow(m) == 7){
       /* promote black pawn */
-      bs_removePiece(bs, m->newRow, m->newCol);
-      bs_placePiece(bs, BLACK, GET_PAWN_PROMOTION(m), m->newRow, m->newCol);
+      bs_removePiece(bs, m_get_nrow(m), m_get_ncol(m));
+      bs_placePiece(bs, BLACK, m_get_pp(m), m_get_nrow(m), m_get_ncol(m));
     }
   }
 }
 
-void bs_undoMove(boardstate *bs, move *m, color c){
+void bs_undoMove(boardstate *bs, move m, color c){
   color c_other = c == WHITE ? BLACK : WHITE;
-  piece p_captured = m->capturedPiece;
-  piece p_moved = getPieceType(bs, c, m->newRow, m->newCol);
+  piece p_captured = m_get_cp(m);
+  piece p_moved = getPieceType(bs, c, m_get_nrow(m), m_get_ncol(m));
   
   
   /* determine if pawn promotion */
-  if (m->pawnPromotion != NULL_PIECE){
-    bs_removePiece(bs, m->newRow, m->newCol);
-    bs_placePiece(bs, c, PAWN, m->oldRow, m->oldCol);
+  if (m_get_pp(m) != NULL_PIECE){
+    bs_removePiece(bs, m_get_nrow(m), m_get_ncol(m));
+    bs_placePiece(bs, c, PAWN, m_get_orow(m), m_get_ocol(m));
   } else {
-    bs_removePiece(bs, m->newRow, m->newCol);
-    bs_placePiece(bs, c, p_moved, m->oldRow, m->oldCol);
+    bs_removePiece(bs, m_get_nrow(m), m_get_ncol(m));
+    bs_placePiece(bs, c, p_moved, m_get_orow(m), m_get_ocol(m));
   }
 
-  if (m->capturedPiece != NULL_PIECE){
-    bs_placePiece(bs, c, p_captured, m->newRow, m->newCol);
+  if (m_get_cp(m) != NULL_PIECE){
+    bs_placePiece(bs, c, p_captured, m_get_nrow(m), m_get_ncol(m));
   }
 
 }
@@ -670,7 +672,8 @@ int bsEquals(boardstate *bs1, boardstate *bs2){
   return 1;
 }
 
-void findMoveFromTo(boardstate *bsFrom, boardstate *bsTo, move *m, color c){
+move findMoveFromTo(boardstate *bsFrom, boardstate *bsTo, color c){
+  move m;
   int i, j;
   bitboard_list *bblCurListFrom, *bblCurListTo;
   position *posOld, *posNew;
@@ -697,8 +700,8 @@ void findMoveFromTo(boardstate *bsFrom, boardstate *bsTo, move *m, color c){
 	posNew = getPositionOfFilled(&bbTemp);
       }
       
-      setMoveWithPromotion(m, P_ROW(posOld), P_COL(posOld),
-			   P_ROW(posNew), P_COL(posNew), i);
+      m = m_set_all(m, P_ROW(posOld), P_COL(posOld),
+		    P_ROW(posNew), P_COL(posNew), i, NULL_PIECE);
     }
 
     /* because of pawn promotions, both bitboard lists might
@@ -708,10 +711,12 @@ void findMoveFromTo(boardstate *bsFrom, boardstate *bsTo, move *m, color c){
 	  bblCurListTo->bitboards[j]){
 	posOld = getPositionOfFilled(&bblCurListFrom->bitboards[j]);
 	posNew = getPositionOfFilled(&bblCurListTo->bitboards[j]);
-	setMove(m, P_ROW(posOld), P_COL(posOld),
-		P_ROW(posNew), P_COL(posNew));
-	return;
+	m = m_set_all(m, P_ROW(posOld), P_COL(posOld),
+		      P_ROW(posNew), P_COL(posNew), NULL_PIECE, NULL_PIECE);
+	return m;
       }
     }
   }
+
+  return m;
 }

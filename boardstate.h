@@ -56,10 +56,10 @@ int bs_isSpaceFilled(boardstate*, int row, int col);
 void printBoardstate(boardstate*);
 
 // Assumes move is correct move
-void makeBoardMove(boardstate*, move*, color);
-void bs_undoMove(boardstate*, move*, color);
+void makeBoardMove(boardstate*, move, color);
+void bs_undoMove(boardstate*, move, color);
 
-void findMoveFromTo(boardstate *from, boardstate *to, move*, color);
+move findMoveFromTo(boardstate *from, boardstate *to, color);
 
 /* the second argument is a 2-d array of bitboards. The first
  slot is the old piece location, the second is the new. */

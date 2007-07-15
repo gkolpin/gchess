@@ -22,8 +22,8 @@ void setPlayerToMove(game_state*, color);
 boardstate * getBoardstate(game_state*);
 int gs_isSpaceFilled(game_state*, int row, int col);
 int en_passante(game_state*);
-void makeMove(game_state*, move*);
-void gs_undoMove(game_state*, move*);
+void makeMove(game_state*, move);
+void gs_undoMove(game_state*, move);
 /* the second argument is a 2-d array of bitboards. The first
  slot is the old piece location, the second is the new. */
 void makeMoveUsingBB(game_state*, bitboard**);
@@ -33,7 +33,7 @@ void gsShallowFree(game_state*);
 void printGameState(game_state*);
 int gsEquals(game_state*, game_state*);
 
-int isValidMove(game_state*, move*);
+int isValidMove(game_state*, move);
 int isCheckMate(game_state*, color forColor);
 int isKingInCheck(game_state*, color);
 

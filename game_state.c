@@ -41,7 +41,7 @@ int gs_isSpaceFilled(game_state *gs, int row, int col){
   return bs_isSpaceFilled(gs->b_state, row, col);
 }
 
-void makeMove(game_state *gs, move *m){
+void makeMove(game_state *gs, move m){
   makeBoardMove(gs->b_state, m, gs->player_to_move);
 
   if (gs->player_to_move == WHITE)
@@ -51,7 +51,7 @@ void makeMove(game_state *gs, move *m){
     gs->player_to_move = WHITE;
 }
 
-void gs_undoMove(game_state *gs, move *m){
+void gs_undoMove(game_state *gs, move m){
   gs->player_to_move = gs->player_to_move == WHITE ? BLACK : WHITE;
   bs_undoMove(gs->b_state, m, gs->player_to_move);
 }
@@ -112,7 +112,7 @@ int gsEquals(game_state *gs1, game_state *gs2){
   return 0;
 }
 
-int isValidMove(game_state *g_state, move *m){
+int isValidMove(game_state *g_state, move m){
   int iReturn = 0;
   game_state_list *gsl = enumerate_moves(g_state, 1);
   game_state *gsTemp = gs_deepCopy(g_state);

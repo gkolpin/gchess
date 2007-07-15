@@ -230,30 +230,30 @@ void enumerate_pawn_moves(game_state *gs, game_state_list *gslReturn){
     if (P_ROW(posTemp) == 6 && getPlayerToMove(gs) == WHITE){
       isBlocked = 1;
       if (!(*full_board & pos[P_ROW(posTemp) - 1][P_COL(posTemp)])){
-	setMove(&m, P_ROW(posTemp), P_COL(posTemp),
-		P_ROW(posTemp) - 1, P_COL(posTemp));
+	m = m_set_all(m, P_ROW(posTemp), P_COL(posTemp),
+		      P_ROW(posTemp) - 1, P_COL(posTemp), NULL_PIECE, NULL_PIECE);
 	gsTemp = gs_deepCopy(gs);
-	makeMove(gsTemp, &m);
+	makeMove(gsTemp, m);
 	insert_gs(gslReturn, gsTemp);
 	isBlocked = 0;
       }
       if (!(*full_board & pos[P_ROW(posTemp) - 2][P_COL(posTemp)]) && 
 	  !isBlocked){
-	setMove(&m, P_ROW(posTemp), P_COL(posTemp),
-		P_ROW(posTemp) - 2, P_COL(posTemp));
+	m = m_set_all(m, P_ROW(posTemp), P_COL(posTemp),
+		      P_ROW(posTemp) - 2, P_COL(posTemp), NULL_PIECE, NULL_PIECE);
 	gsTemp = gs_deepCopy(gs);
-	makeMove(gsTemp, &m);
+	makeMove(gsTemp, m);
 	insert_gs(gslReturn, gsTemp);
       }
     } else if (P_ROW(posTemp) != 6 && getPlayerToMove(gs) == WHITE){
       if (!(*full_board & pos[P_ROW(posTemp) - 1][P_COL(posTemp)])){
-	setMove(&m, P_ROW(posTemp), P_COL(posTemp),
-		P_ROW(posTemp) - 1, P_COL(posTemp));
+	m = m_set_all(m, P_ROW(posTemp), P_COL(posTemp),
+		      P_ROW(posTemp) - 1, P_COL(posTemp), NULL_PIECE, NULL_PIECE);
 	gsTemp = gs_deepCopy(gs);
-	makeMove(gsTemp, &m);
-	if (m.newRow == 0){
+	makeMove(gsTemp, m);
+	if (m_get_nrow(m) == 0){
 	  enumeratePawnPromotions(gslReturn, gsTemp, getPlayerToMove(gs),
-				  m.newRow, m.newCol);
+				  m_get_nrow(m), m_get_ncol(m));
 	  gsShallowFree(gsTemp);
 	  free(gsTemp);
 	} else {
@@ -263,29 +263,30 @@ void enumerate_pawn_moves(game_state *gs, game_state_list *gslReturn){
     } else if (P_ROW(posTemp) == 1 && getPlayerToMove(gs) == BLACK){
       isBlocked = 1;
       if (!(*full_board & pos[P_ROW(posTemp) + 1][P_COL(posTemp)])){
-	setMove(&m, P_ROW(posTemp), P_COL(posTemp),
-		P_ROW(posTemp) + 1, P_COL(posTemp));
+	m = m_set_all(m, P_ROW(posTemp), P_COL(posTemp),
+		      P_ROW(posTemp) + 1, P_COL(posTemp), NULL_PIECE, NULL_PIECE);
 	gsTemp = gs_deepCopy(gs);
-	makeMove(gsTemp, &m);
+	makeMove(gsTemp, m);
 	insert_gs(gslReturn, gsTemp);
+	isBlocked = 0;
       }
       if (!(*full_board & pos[P_ROW(posTemp) + 2][P_COL(posTemp)]) &&
 	  !isBlocked){
-	setMove(&m, P_ROW(posTemp), P_COL(posTemp),
-		P_ROW(posTemp) + 2, P_COL(posTemp));
+	m = m_set_all(m, P_ROW(posTemp), P_COL(posTemp),
+		      P_ROW(posTemp) + 2, P_COL(posTemp), NULL_PIECE, NULL_PIECE);
 	gsTemp = gs_deepCopy(gs);
-	makeMove(gsTemp, &m);
+	makeMove(gsTemp, m);
 	insert_gs(gslReturn, gsTemp);
       }
     } else if (P_ROW(posTemp) != 1 && getPlayerToMove(gs) == BLACK){
       if (!(*full_board & pos[P_ROW(posTemp) + 1][P_COL(posTemp)])){
-	setMove(&m, P_ROW(posTemp), P_COL(posTemp),
-		P_ROW(posTemp) + 1, P_COL(posTemp));
+	m = m_set_all(m, P_ROW(posTemp), P_COL(posTemp),
+		      P_ROW(posTemp) + 1, P_COL(posTemp), NULL_PIECE, NULL_PIECE);
 	gsTemp = gs_deepCopy(gs);
-	makeMove(gsTemp, &m);
-	if (m.newRow == 7){
+	makeMove(gsTemp, m);
+	if (m_get_nrow(m) == 7){
 	  enumeratePawnPromotions(gslReturn, gsTemp, getPlayerToMove(gs),
-				  m.newRow, m.newCol);
+				  m_get_nrow(m), m_get_ncol(m));
 	  gsShallowFree(gsTemp);
 	  free(gsTemp);
 	} else {
@@ -300,13 +301,13 @@ void enumerate_pawn_moves(game_state *gs, game_state_list *gslReturn){
 	/* a capture is possible, record it! */
 	gsTemp = gs_deepCopy(gs);
 	posTemp2 = getPositionOfFilled(&cur_pawn_moves->bitboards[j]);
-	setMove(&m, P_ROW(posTemp), P_COL(posTemp),
-		P_ROW(posTemp2), P_COL(posTemp2));
-	makeMove(gsTemp, &m);
-	if ((getPlayerToMove(gs) == WHITE && m.newRow == 0) ||
-	    (getPlayerToMove(gs) == BLACK && m.newRow == 7)){
+	m = m_set_all(m, P_ROW(posTemp), P_COL(posTemp),
+		      P_ROW(posTemp2), P_COL(posTemp2), NULL_PIECE, NULL_PIECE);
+	makeMove(gsTemp, m);
+	if ((getPlayerToMove(gs) == WHITE && m_get_nrow(m) == 0) ||
+	    (getPlayerToMove(gs) == BLACK && m_get_nrow(m) == 7)){
 	  enumeratePawnPromotions(gslReturn, gsTemp, getPlayerToMove(gs), 
-				  m.newRow, m.newCol);
+				  m_get_nrow(m), m_get_ncol(m));
 	  gsShallowFree(gsTemp);
 	  free(gsTemp);
 	} else {
@@ -346,9 +347,9 @@ void enumerate_knight_moves(game_state *gs, game_state_list *gslReturn){
       if (!(curPotentialMoves->bitboards[j] & *friendly_pieces)){
 	gsTemp = gs_deepCopy(gs);
 	posTemp2 = getPositionOfFilled(&curPotentialMoves->bitboards[j]);
-	setMove(&m, P_ROW(posTemp1), P_COL(posTemp1),
-		P_ROW(posTemp2), P_COL(posTemp2));
-	makeMove(gsTemp, &m);
+	m = m_set_all(m, P_ROW(posTemp1), P_COL(posTemp1),
+		      P_ROW(posTemp2), P_COL(posTemp2), NULL_PIECE, NULL_PIECE);
+	makeMove(gsTemp, m);
 	insert_gs(gslReturn, gsTemp);
       }
     }
@@ -381,9 +382,9 @@ void enumerate_single_rook_moves(bitboard *curPos, game_state_list *toFill,
     if (!(curRowPotentialMoves->bitboards[j] & *friendly_pieces)){
       gsTemp = gs_deepCopy(gs);
       posTemp2 = getPositionOfFilled(&curRowPotentialMoves->bitboards[j]);
-      setMove(&m, P_ROW(posTemp1), P_COL(posTemp1),
-	      P_ROW(posTemp2), P_COL(posTemp2));
-      makeMove(gsTemp, &m);
+      m = m_set_all(m, P_ROW(posTemp1), P_COL(posTemp1),
+		    P_ROW(posTemp2), P_COL(posTemp2), NULL_PIECE, NULL_PIECE);
+      makeMove(gsTemp, m);
       insert_gs(toFill, gsTemp);
     }
   }
@@ -393,9 +394,9 @@ void enumerate_single_rook_moves(bitboard *curPos, game_state_list *toFill,
     if (!(curColPotentialMoves->bitboards[j] & *friendly_pieces)){
       gsTemp = gs_deepCopy(gs);
       posTemp2 = getPositionOfFilled(&curColPotentialMoves->bitboards[j]);
-      setMove(&m, P_ROW(posTemp1), P_COL(posTemp1),
-	      P_ROW(posTemp2), P_COL(posTemp2));
-      makeMove(gsTemp, &m);
+      m = m_set_all(m, P_ROW(posTemp1), P_COL(posTemp1),
+		    P_ROW(posTemp2), P_COL(posTemp2), NULL_PIECE, NULL_PIECE);
+      makeMove(gsTemp, m);
       insert_gs(toFill, gsTemp);
     }
   }  
@@ -458,9 +459,9 @@ void enumerate_single_bishop_moves(bitboard *curPos, game_state_list *toFill,
     if (!(curPosDiagPotentialMoves->bitboards[j] & *friendly_pieces)){
       gsTemp = gs_deepCopy(gs);
       posTemp2 = getPositionOfFilled(&curPosDiagPotentialMoves->bitboards[j]);
-      setMove(&m, P_ROW(posTemp1), P_COL(posTemp1),
-	      P_ROW(posTemp2), P_COL(posTemp2));
-      makeMove(gsTemp, &m);
+      m = m_set_all(m, P_ROW(posTemp1), P_COL(posTemp1),
+		    P_ROW(posTemp2), P_COL(posTemp2), NULL_PIECE, NULL_PIECE);
+      makeMove(gsTemp, m);
       insert_gs(toFill, gsTemp);
     }
   }
@@ -470,9 +471,9 @@ void enumerate_single_bishop_moves(bitboard *curPos, game_state_list *toFill,
     if (!(curNegDiagPotentialMoves->bitboards[j] & *friendly_pieces)){
       gsTemp = gs_deepCopy(gs);
       posTemp2 = getPositionOfFilled(&curNegDiagPotentialMoves->bitboards[j]);
-      setMove(&m, P_ROW(posTemp1), P_COL(posTemp1),
-	      P_ROW(posTemp2), P_COL(posTemp2));
-      makeMove(gsTemp, &m);
+      m = m_set_all(m, P_ROW(posTemp1), P_COL(posTemp1),
+		    P_ROW(posTemp2), P_COL(posTemp2), NULL_PIECE, NULL_PIECE);
+      makeMove(gsTemp, m);
       insert_gs(toFill, gsTemp);
     }
   }  
@@ -574,9 +575,9 @@ void enumerate_king_moves(game_state *gs, game_state_list *gslReturn){
     if (!(curPotentialMoves->bitboards[i] & *friendly_pieces)){
       gsTemp = gs_deepCopy(gs);
       posTemp2 = getPositionOfFilled(&curPotentialMoves->bitboards[i]);
-      setMove(&m, P_ROW(posTemp1), P_COL(posTemp1),
-	      P_ROW(posTemp2), P_COL(posTemp2));
-      makeMove(gsTemp, &m);
+      m = m_set_all(m, P_ROW(posTemp1), P_COL(posTemp1),
+		    P_ROW(posTemp2), P_COL(posTemp2), NULL_PIECE, NULL_PIECE);
+      makeMove(gsTemp, m);
       insert_gs(gslReturn, gsTemp);
     }
   }

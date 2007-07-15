@@ -26,12 +26,12 @@ void initRookMoves();
 //void initBishopMoves();
 void initKingMoveMasks();
 void initRowMoves(bitboard[8][8][256]);
-int isLegalPawnMove(game_state*, move*);
-int isLegalKnightMove(game_state*, move*);
-int isLegalRookMove(game_state*, move*);
-int isLegalBishopMove(game_state*, move*);
-int isLegalQueenMove(game_state*, move*);
-int isLegalKingMove(game_state*, move*);
+int isLegalPawnMove(game_state*, move);
+int isLegalKnightMove(game_state*, move);
+int isLegalRookMove(game_state*, move);
+int isLegalBishopMove(game_state*, move);
+int isLegalQueenMove(game_state*, move);
+int isLegalKingMove(game_state*, move);
 
 void moves_init(){
   initted = 1;
@@ -338,7 +338,7 @@ void initKingMoveMasks(){
 void initBishopMoves(){}
 */
 
-int isLegalPawnMove(game_state* gs, move* m){
+int isLegalPawnMove(game_state* gs, move m){
   /**
    * @TODO: determine en passante moves,
    * precompute flipped bitboards
@@ -351,8 +351,8 @@ int isLegalPawnMove(game_state* gs, move* m){
   bitboard temp;
 
   if (getPlayerToMove(gs) == WHITE){
-    noncaptures = pawn_moves[m->oldRow][m->oldCol];
-    captures = pawn_captures[m->oldRow][m->oldCol];
+    noncaptures = pawn_moves[m_get_orow(m)][m_get_ocol(m)];
+    captures = pawn_captures[m_get_orow(m)][m_get_ocol(m)];
     
     intersect_bb(&captures, getAllBlack(getBoardstate(gs)), &possible_moves);
     
@@ -360,8 +360,8 @@ int isLegalPawnMove(game_state* gs, move* m){
 
   else{
 
-    noncaptures = pawn_moves[7 - m->oldRow][m->oldCol];
-    captures = pawn_captures[7 - m->oldRow][m->oldCol];
+    noncaptures = pawn_moves[7 - m_get_orow(m)][m_get_ocol(m)];
+    captures = pawn_captures[7 - m_get_orow(m)][m_get_ocol(m)];
 
     flipboard(&noncaptures);
     flipboard(&captures);
@@ -376,14 +376,14 @@ int isLegalPawnMove(game_state* gs, move* m){
   
   union_bb(&temp, &possible_moves, &possible_moves);
   
-  if (isFilled(&possible_moves, m->newRow, m->newCol))
+  if (isFilled(&possible_moves, m_get_nrow(m), m_get_ncol(m)))
     return 1;
   
   return 0;
 }
 
-int isLegalKnightMove(game_state* gs, move* m){
-  bitboard possible_moves = knight_moves[m->oldRow][m->oldCol];
+int isLegalKnightMove(game_state* gs, move m){
+  bitboard possible_moves = knight_moves[m_get_orow(m)][m_get_ocol(m)];
   bitboard temp;
 
   if (getPlayerToMove(gs) == WHITE){
@@ -395,26 +395,26 @@ int isLegalKnightMove(game_state* gs, move* m){
 
   intersect_bb(&temp, &possible_moves, &possible_moves);
 
-  if (isFilled(&possible_moves, m->newRow, m->newCol))
+  if (isFilled(&possible_moves, m_get_nrow(m), m_get_ncol(m)))
     return 1;
 
   return 0;
 }
 
-int isLegalRookMove(game_state *gs, move *m){
-  unsigned char row_description = getRow(getFullBoard(getBoardstate(gs)), m->oldRow);
-  unsigned char col_description = getCol(getFullBoard(getBoardstate(gs)), m->oldCol);
+int isLegalRookMove(game_state *gs, move m){
+  unsigned char row_description = getRow(getFullBoard(getBoardstate(gs)), m_get_orow(m));
+  unsigned char col_description = getCol(getFullBoard(getBoardstate(gs)), m_get_ocol(m));
 
   bitboard possible_moves;
   bitboard temp;
 
-  union_bb(&rook_row_moves[m->oldRow][m->oldCol][row_description],
-	   &rook_col_moves[m->oldRow][m->oldCol][col_description], 
+  union_bb(&rook_row_moves[m_get_orow(m)][m_get_ocol(m)][row_description],
+	   &rook_col_moves[m_get_orow(m)][m_get_ocol(m)][col_description], 
 	   &possible_moves);
 
-  /*printf("row: %d, col: %d, col descr: %hhu\n", m->oldRow, m->oldCol, col_description);
-  printBitboard(&rook_row_moves[m->oldRow][m->oldCol][row_description]);
-  printBitboard(&rook_col_moves[m->oldRow][m->oldCol][col_description]);
+  /*printf("row: %d, col: %d, col descr: %hhu\n", m->oldRow, m_get_ocol(m), col_description);
+  printBitboard(&rook_row_moves[m->oldRow][m_get_ocol(m)][row_description]);
+  printBitboard(&rook_col_moves[m->oldRow][m_get_ocol(m)][col_description]);
   printBitboard(&rook_col_moves[0][0][156]);*/
 
   /* Make sure that the captures on the row and column ends 
@@ -429,13 +429,13 @@ int isLegalRookMove(game_state *gs, move *m){
 
   intersect_bb(&temp, &possible_moves, &possible_moves);
   
-  if (isFilled(&possible_moves, m->newRow, m->newCol))
+  if (isFilled(&possible_moves, m_get_nrow(m), m_get_ncol(m)))
     return 1;
   
   return 0;
 }
  
-int isLegalBishopMove(game_state *gs, move *m){
+int isLegalBishopMove(game_state *gs, move m){
   unsigned char pos_diag_description;
   unsigned char neg_diag_description;
 
@@ -446,11 +446,11 @@ int isLegalBishopMove(game_state *gs, move *m){
   rotateBoard45(&temp_bb1);
   rotateBoardNeg45(&temp_bb2);
 
-  neg_diag_description = getRow(&temp_bb1, (m->oldRow - m->oldCol) % 8);
-  pos_diag_description = getRow(&temp_bb2, (m->oldRow + m->oldCol) % 8);
+  neg_diag_description = getRow(&temp_bb1, (m_get_orow(m) - m_get_ocol(m)) % 8);
+  pos_diag_description = getRow(&temp_bb2, (m_get_orow(m) + m_get_ocol(m)) % 8);
 
-  temp_bb1 = BISHOP_ROT_45_MOVES(m->oldRow, m->oldCol, neg_diag_description);
-  temp_bb2 = BISHOP_ROT_NEG_45_MOVES(m->oldRow, m->oldCol, pos_diag_description);
+  temp_bb1 = BISHOP_ROT_45_MOVES(m_get_orow(m), m_get_ocol(m), neg_diag_description);
+  temp_bb2 = BISHOP_ROT_NEG_45_MOVES(m_get_orow(m), m_get_ocol(m), pos_diag_description);
 
   /* Now rotate the positive diagonals positively and the 
      negative ones negatively so they are back to their original
@@ -472,13 +472,13 @@ int isLegalBishopMove(game_state *gs, move *m){
 
   intersect_bb(&temp, &possible_moves, &possible_moves);
 
-  if (isFilled(&possible_moves, m->newRow, m->newCol))
+  if (isFilled(&possible_moves, m_get_nrow(m), m_get_ncol(m)))
     return 1;
   
   return 0;
 }
 
-int isLegalQueenMove(game_state *gs, move *m){
+int isLegalQueenMove(game_state *gs, move m){
   /* This should be easy, just or isLegalRook move and
      isLegalBishopMove */
 
@@ -489,14 +489,14 @@ int isLegalQueenMove(game_state *gs, move *m){
   return 0;
 }
 
-int isLegalKingMove(game_state *gs, move *m){
+int isLegalKingMove(game_state *gs, move m){
   /* This is similar to the queen move except that we can
      move a maximum/minimum of one square */
 
   /* @TODO - make sure king can't move into check */
 
-  if (isLegalQueenMove(gs, m) && isFilled(&king_move_masks[m->oldRow][m->oldCol],
-					  m->newRow, m->newCol)){
+  if (isLegalQueenMove(gs, m) && isFilled(&king_move_masks[m_get_orow(m)][m_get_ocol(m)],
+					  m_get_nrow(m), m_get_ncol(m))){
     return 1;
   }
 
